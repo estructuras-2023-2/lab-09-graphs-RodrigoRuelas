@@ -14,13 +14,14 @@ struct Carretera {
     string ciudad1;
     string ciudad2;
     int costo;
-    Carretera(string id, string ciudad1, string ciudad2, int costo) : id(id), ciudad1(ciudad1), ciudad2(ciudad2),
+
+    Carretera(string id, string ciudad1, string ciudad2, int costo) : id(id), ciudad1(ciudad1), ciudad2(ciudad2), costo(costo) {}
 };
 
 struct CarreteraHash {
     size_t operator()(const Carretera& c) const {
         return hash<string>()(c.id);
-    }    
+    }
 };
 
 struct CarreteraEqual {
@@ -28,6 +29,7 @@ struct CarreteraEqual {
         return a.id == b.id;
     }
 };
+
 
 string reconstruye() {
     unordered_map<string, vector<Carretera>> grafo;
