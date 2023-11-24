@@ -30,12 +30,31 @@ struct CarreteraEqual {
     }
 };
 
+bool validarElemento(const string& elemento) {
+    stringstream ss(elemento);
+    string id, ciudad1, ciudad2;
+    int costo = 0;
+
+    if (!(ss >> id >> ciudad1 >> ciudad2) || (ss >> costo && costo < 0)) {
+        return false;
+    }
+
+    return true;
+}
+
 string reconstruye(const vector<string>& carreteras) {
+    if (!validarElemento(carreteras[0])) {
+        return "IMPOSIBLE";
+    }
+
     unordered_map<string, vector<Carretera>> grafo;
     unordered_set<string> todasLasCiudades;
 
-    // Parsear la información y construir el grafo y conjunto de ciudades
     for (auto it = carreteras.begin(); it != carreteras.end(); ++it) {
+        if (!validarElemento(*it)) {
+            return "IMPOSIBLE";
+        }
+
         const auto& camino = *it;
         stringstream ss(camino);
         string id, ciudad1, ciudad2;
@@ -57,7 +76,6 @@ string reconstruye(const vector<string>& carreteras) {
         }
     }
 
-
     unordered_set<string> ciudadesVisitadas;
     queue<string> cola;
 
@@ -77,7 +95,6 @@ string reconstruye(const vector<string>& carreteras) {
         }
     }
 
-
     if (ciudadesVisitadas.size() != todasLasCiudades.size()) {
         return "IMPOSIBLE";
     }
@@ -86,6 +103,10 @@ string reconstruye(const vector<string>& carreteras) {
     unordered_set<string> ciudadesConCarretera;
 
     for (auto it = carreteras.begin(); it != carreteras.end(); ++it) {
+        if (!validarElemento(*it)) {
+            return "IMPOSIBLE";
+        }
+
         const auto& camino = *it;
         stringstream ss(camino);
         string id, ciudad1, ciudad2;
@@ -105,7 +126,6 @@ string reconstruye(const vector<string>& carreteras) {
         }
     }
 
-
     vector<string> resultado;
     for (const auto& carretera : carreterasDanadas) {
         resultado.push_back(carretera);
@@ -115,8 +135,8 @@ string reconstruye(const vector<string>& carreteras) {
 
     stringstream ss;
     for (const auto& id : resultado) {
-        ss << id << endl;
-    }
+        ss << id;
+    }    
 
     return ss.str();
 }
