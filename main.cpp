@@ -30,11 +30,11 @@ struct CarreteraEqual {
     }
 };
 
-
 string reconstruye(const vector<string>& carreteras) {
     unordered_map<string, vector<Carretera>> grafo;
     unordered_set<string> todasLasCiudades;
 
+    // Parsear la información y construir el grafo y conjunto de ciudades
     for (auto it = carreteras.begin(); it != carreteras.end(); ++it) {
         const auto& camino = *it;
         stringstream ss(camino);
@@ -121,8 +121,7 @@ string reconstruye(const vector<string>& carreteras) {
     return ss.str();
 }
 
-int main()
-{
+int main() {
     vector<vector<string>> entradas = {
         {"C1 Lima Trujillo 1", "C2 Tacna Trujillo", "C3 Tacna Arequipa"},
         {"T1 Tumbes Quito", "C1 Iquitos StMartin 1000"},
