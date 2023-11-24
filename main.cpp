@@ -121,7 +121,16 @@ string reconstruye() {
 
 int main()
 {
-    cout<<"Hello World";
+    vector<vector<string>> entradas = {
+        {"C1 Lima Trujillo 1", "C2 Tacna Trujillo", "C3 Tacna Arequipa"},
+        {"T1 Tumbes Quito", "C1 Iquitos StMartin 1000"},
+        {"N1 Bogota Bucaramanga"},
+        {"C1 Callao Ica 1", "C2 Callao Puno 2", "S0 Puno Ica"}
+    };
+
+    for (const auto& entrada : entradas) {
+        cout << "Resultado: " << reconstruye(entrada) << endl;
+    }
 
     return 0;
 }
