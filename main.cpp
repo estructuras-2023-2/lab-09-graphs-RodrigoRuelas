@@ -115,7 +115,7 @@ string reconstruye(const vector<string>& carreteras) {
 
     stringstream ss;
     for (const auto& id : resultado) {
-        ss << id << " ";
+        ss << id << endl;
     }
 
     return ss.str();
