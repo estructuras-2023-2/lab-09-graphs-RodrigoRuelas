@@ -31,7 +31,7 @@ struct CarreteraEqual {
 };
 
 
-string reconstruye() {
+string reconstruye(const vector<string>& carreteras) {
     unordered_map<string, vector<Carretera>> grafo;
     unordered_set<string> todasLasCiudades;
 
