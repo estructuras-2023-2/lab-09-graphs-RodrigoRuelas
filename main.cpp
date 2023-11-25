@@ -1,144 +1,115 @@
-#include <iostream>
+#include <string>
 #include <vector>
-#include <queue>
-#include <unordered_map>
-#include <unordered_set>
-#include <algorithm>
 #include <sstream>
-#include <functional>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <iostream>
 
 using namespace std;
 
-struct Carretera {
+class UnionFind {
+private:
+    map<string, string> parent;
+    map<string, int> rank;
+
+public:
+    void makeSet(const string& s) {
+        parent[s] = s;
+        rank[s] = 0;
+    }
+
+    string find(const string& s) {
+        if (parent[s] != s)
+            parent[s] = find(parent[s]);
+        return parent[s];
+    }
+
+    bool unionSets(const string& a, const string& b) {
+        string rootA = find(a);
+        string rootB = find(b);
+
+        if (rootA == rootB)
+            return false;
+
+        if (rank[rootA] < rank[rootB])
+            parent[rootA] = rootB;
+        else if (rank[rootA] > rank[rootB])
+            parent[rootB] = rootA;
+        else {
+            parent[rootB] = rootA;
+            rank[rootA]++;
+        }
+
+        return true;
+    }
+};
+
+class Road {
+public:
     string id;
-    string ciudad1;
-    string ciudad2;
-    int costo;
+    string city1;
+    string city2;
+    int cost;
 
-    Carretera(string id, string ciudad1, string ciudad2, int costo) : id(id), ciudad1(ciudad1), ciudad2(ciudad2), costo(costo) {}
+    Road(string i, string c1, string c2, int co = 0) : id(i), city1(c1), city2(c2), cost(co) {}
 };
 
-struct CarreteraHash {
-    size_t operator()(const Carretera& c) const {
-        return hash<string>()(c.id);
-    }
-};
+string reconstruye(vector<string> carreteras) {
+    vector<Road> damagedRoads;
+    UnionFind uf;
+    set<string> cities;
+    set<string> selectedRoads;
 
-struct CarreteraEqual {
-    bool operator()(const Carretera& a, const Carretera& b) const {
-        return a.id == b.id;
-    }
-};
-
-bool validarElemento(const string& elemento) {
-    stringstream ss(elemento);
-    string id, ciudad1, ciudad2;
-    int costo = 0;
-
-    if (!(ss >> id >> ciudad1 >> ciudad2) || (ss >> costo && costo < 0)) {
-        return false;
+    for (const auto& roadStr : carreteras) {
+        stringstream ss(roadStr);
+        string id, city1, city2;
+        ss >> id >> city1 >> city2;
+        uf.makeSet(city1);
+        uf.makeSet(city2);
+        cities.insert(city1);
+        cities.insert(city2);
     }
 
-    return true;
-}
-
-string reconstruye(const vector<string>& carreteras) {
-    if (!validarElemento(carreteras[0])) {
-        return "IMPOSIBLE";
-    }
-
-    unordered_map<string, vector<Carretera>> grafo;
-    unordered_set<string> todasLasCiudades;
-
-    for (auto it = carreteras.begin(); it != carreteras.end(); ++it) {
-        if (!validarElemento(*it)) {
-            return "IMPOSIBLE";
-        }
-
-        const auto& camino = *it;
-        stringstream ss(camino);
-        string id, ciudad1, ciudad2;
-        ss >> id >> ciudad1 >> ciudad2;
-
-        todasLasCiudades.insert(ciudad1);
-        todasLasCiudades.insert(ciudad2);
-
-        int costo = 0;
-        if (ss.peek() == ' ') {
-            ss >> costo;
-            Carretera carretera(id, ciudad1, ciudad2, costo);
-            grafo[ciudad1].push_back(carretera);
-            grafo[ciudad2].push_back(carretera);
+    for (const auto& roadStr : carreteras) {
+        stringstream ss(roadStr);
+        string id, city1, city2;
+        int cost = 0;
+        ss >> id >> city1 >> city2;
+        if (!(ss >> cost)) {
+            uf.unionSets(city1, city2);
         } else {
-            Carretera carretera(id, ciudad1, ciudad2, 0);
-            grafo[ciudad1].push_back(carretera);
-            grafo[ciudad2].push_back(carretera);
+            damagedRoads.emplace_back(id, city1, city2, cost);
         }
     }
 
-    unordered_set<string> ciudadesVisitadas;
-    queue<string> cola;
+    sort(damagedRoads.begin(), damagedRoads.end(), [](const Road& a, const Road& b) {
+        if (a.cost != b.cost) {
+            return a.cost < b.cost;
+        }
+        return a.id < b.id;
+    });
 
-    cola.push(*todasLasCiudades.begin());
-
-    while (!cola.empty()) {
-        string ciudad = cola.front();
-        cola.pop();
-
-        ciudadesVisitadas.insert(ciudad);
-
-        for (const auto& carretera : grafo[ciudad]) {
-            string siguienteCiudad = (carretera.ciudad1 == ciudad) ? carretera.ciudad2 : carretera.ciudad1;
-            if (ciudadesVisitadas.find(siguienteCiudad) == ciudadesVisitadas.end()) {
-                cola.push(siguienteCiudad);
-            }
+    for (const auto& road : damagedRoads) {
+        if (uf.find(road.city1) != uf.find(road.city2)) {
+            uf.unionSets(road.city1, road.city2);
+            selectedRoads.insert(road.id);
         }
     }
 
-    if (ciudadesVisitadas.size() != todasLasCiudades.size()) {
-        return "IMPOSIBLE";
-    }
-
-    unordered_set<string> carreterasDanadas;
-    unordered_set<string> ciudadesConCarretera;
-
-    for (auto it = carreteras.begin(); it != carreteras.end(); ++it) {
-        if (!validarElemento(*it)) {
+    string root = uf.find(*cities.begin());
+    for (const auto& city : cities) {
+        if (uf.find(city) != root) {
             return "IMPOSIBLE";
         }
-
-        const auto& camino = *it;
-        stringstream ss(camino);
-        string id, ciudad1, ciudad2;
-        ss >> id >> ciudad1 >> ciudad2;
-
-        int costo = 0;
-        if (ss.peek() == ' ') {
-        ss >> costo;
-            if (costo > 0) {
-                if (ciudadesConCarretera.find(ciudad1) == ciudadesConCarretera.end() &&
-                    ciudadesConCarretera.find(ciudad2) == ciudadesConCarretera.end()) {
-                    carreterasDanadas.insert(id);
-                    ciudadesConCarretera.insert(ciudad1);
-                    ciudadesConCarretera.insert(ciudad2);
-                }
-            }
-        }
     }
 
-    vector<string> resultado;
-    for (const auto& carretera : carreterasDanadas) {
-        resultado.push_back(carretera);
+    string result;
+    for (const auto& id : selectedRoads) {
+        result += id + " ";
     }
 
-    sort(resultado.begin(), resultado.end());
-
-    stringstream ss;
-    for (const auto& id : resultado) {
-        ss << id;
-    }    
-
-    return ss.str();
+    return result.empty() ? "" : result.substr(0, result.length() - 1);
 }
 
 int main() {
