@@ -10,35 +10,35 @@ using namespace std;
 
 class UnionFind {
 private:
-    map<string, string> parent;
-    map<string, int> rank;
+    map<string, string> padre;
+    map<string, int> rango;
 
 public:
-    void makeSet(const string& s) {
-        parent[s] = s;
-        rank[s] = 0;
+    void hacerConjunto(const string& s) {
+        padre[s] = s;
+        rango[s] = 0;
     }
 
-    string find(const string& s) {
-        if (parent[s] != s)
-            parent[s] = find(parent[s]);
-        return parent[s];
+    string encontrar(const string& s) {
+        if (padre[s] != s)
+            padre[s] = encontrar(padre[s]);
+        return padre[s];
     }
 
-    bool unionSets(const string& a, const string& b) {
-        string rootA = find(a);
-        string rootB = find(b);
+    bool unirConjuntos(const string& a, const string& b) {
+        string raizA = encontrar(a);
+        string raizB = encontrar(b);
 
-        if (rootA == rootB)
+        if (raizA == raizB)
             return false;
 
-        if (rank[rootA] < rank[rootB])
-            parent[rootA] = rootB;
-        else if (rank[rootA] > rank[rootB])
-            parent[rootB] = rootA;
+        if (rango[raizA] < rango[raizB])
+            padre[raizA] = raizB;
+        else if (rango[raizA] > rango[raizB])
+            padre[raizB] = raizA;
         else {
-            parent[rootB] = rootA;
-            rank[rootA]++;
+            padre[raizB] = raizA;
+            rango[raizA]++;
         }
 
         return true;
