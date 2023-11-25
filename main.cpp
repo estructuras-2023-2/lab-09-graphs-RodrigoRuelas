@@ -45,14 +45,14 @@ public:
     }
 };
 
-class Road {
+class Carretera {
 public:
     string id;
-    string city1;
-    string city2;
-    int cost;
+    string ciudad1;
+    string ciudad2;
+    int costo;
 
-    Road(string i, string c1, string c2, int co = 0) : id(i), city1(c1), city2(c2), cost(co) {}
+    Carretera(string i, string c1, string c2, int co = 0) : id(i), ciudad1(c1), ciudad2(c2), costo(co) {}
 };
 
 string reconstruye(vector<string> carreteras) {
