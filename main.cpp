@@ -55,7 +55,7 @@ public:
     Carretera(string i, string c1, string c2, int co = 0) : id(i), ciudad1(c1), ciudad2(c2), costo(co) {}
 };
 
-string reconstruir(vector<string> carreteras) {
+string reconstruye(vector<string> carreteras) {
     vector<Carretera> carreterasDañadas;
     UnionFind uf;
     set<string> ciudades;
