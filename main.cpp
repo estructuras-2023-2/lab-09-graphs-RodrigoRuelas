@@ -55,61 +55,61 @@ public:
     Carretera(string i, string c1, string c2, int co = 0) : id(i), ciudad1(c1), ciudad2(c2), costo(co) {}
 };
 
-string reconstruye(vector<string> carreteras) {
-    vector<Road> damagedRoads;
+string reconstruir(vector<string> carreteras) {
+    vector<Carretera> carreterasDañadas;
     UnionFind uf;
-    set<string> cities;
-    set<string> selectedRoads;
+    set<string> ciudades;
+    set<string> carreterasSeleccionadas;
 
-    for (const auto& roadStr : carreteras) {
-        stringstream ss(roadStr);
-        string id, city1, city2;
-        ss >> id >> city1 >> city2;
-        uf.makeSet(city1);
-        uf.makeSet(city2);
-        cities.insert(city1);
-        cities.insert(city2);
+    for (const auto& carreteraStr : carreteras) {
+        stringstream ss(carreteraStr);
+        string id, ciudad1, ciudad2;
+        ss >> id >> ciudad1 >> ciudad2;
+        uf.hacerConjunto(ciudad1);
+        uf.hacerConjunto(ciudad2);
+        ciudades.insert(ciudad1);
+        ciudades.insert(ciudad2);
     }
 
-    for (const auto& roadStr : carreteras) {
-        stringstream ss(roadStr);
-        string id, city1, city2;
-        int cost = 0;
-        ss >> id >> city1 >> city2;
-        if (!(ss >> cost)) {
-            uf.unionSets(city1, city2);
+    for (const auto& carreteraStr : carreteras) {
+        stringstream ss(carreteraStr);
+        string id, ciudad1, ciudad2;
+        int costo = 0;
+        ss >> id >> ciudad1 >> ciudad2;
+        if (!(ss >> costo)) {
+            uf.unirConjuntos(ciudad1, ciudad2);
         } else {
-            damagedRoads.emplace_back(id, city1, city2, cost);
+            carreterasDañadas.emplace_back(id, ciudad1, ciudad2, costo);
         }
     }
 
-    sort(damagedRoads.begin(), damagedRoads.end(), [](const Road& a, const Road& b) {
-        if (a.cost != b.cost) {
-            return a.cost < b.cost;
+    sort(carreterasDañadas.begin(), carreterasDañadas.end(), [](const Carretera& a, const Carretera& b) {
+        if (a.costo != b.costo) {
+            return a.costo < b.costo;
         }
         return a.id < b.id;
     });
 
-    for (const auto& road : damagedRoads) {
-        if (uf.find(road.city1) != uf.find(road.city2)) {
-            uf.unionSets(road.city1, road.city2);
-            selectedRoads.insert(road.id);
+    for (const auto& carretera : carreterasDañadas) {
+        if (uf.encontrar(carretera.ciudad1) != uf.encontrar(carretera.ciudad2)) {
+            uf.unirConjuntos(carretera.ciudad1, carretera.ciudad2);
+            carreterasSeleccionadas.insert(carretera.id);
         }
     }
 
-    string root = uf.find(*cities.begin());
-    for (const auto& city : cities) {
-        if (uf.find(city) != root) {
+    string raiz = uf.encontrar(*ciudades.begin());
+    for (const auto& ciudad : ciudades) {
+        if (uf.encontrar(ciudad) != raiz) {
             return "IMPOSIBLE";
         }
     }
 
-    string result;
-    for (const auto& id : selectedRoads) {
-        result += id + " ";
+    string resultado;
+    for (const auto& id : carreterasSeleccionadas) {
+        resultado += id + " ";
     }
 
-    return result.empty() ? "" : result.substr(0, result.length() - 1);
+    return resultado.empty() ? "" : resultado.substr(0, resultado.length() - 1);
 }
 
 int main() {
